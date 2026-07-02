@@ -800,6 +800,58 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Snapshot Preview */}
+              <div className="bg-charcoal-light/20 border border-monk-amber/10 rounded-xl p-5 shadow-xl space-y-3">
+                <span className="text-[10px] text-monk-amber uppercase tracking-widest font-semibold">⛪ Preview — jak to uvidí hráč</span>
+
+                {/* Opat card */}
+                <div className="bg-charcoal/50 rounded-lg p-3 border border-monk-amber/10 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">⛪</span>
+                    <div>
+                      <div className="text-xs font-semibold text-gray-200">{abbotName || "—"}</div>
+                      <div className="text-[10px] text-gray-500 italic">{abbotMood} · virtue {abbotVirtue}/10</div>
+                    </div>
+                    <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${scriniumOpen ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-900/30 text-red-400 border border-red-500/30"}`}>
+                      Scrinium {scriniumOpen ? "OTEVŘENO" : "ZAVŘENO"}
+                    </span>
+                  </div>
+
+                  {abbotMessage && (
+                    <div className="text-[11px] text-gray-300 italic font-serif leading-relaxed border-l-2 border-monk-amber/30 pl-2 mt-2">
+                      "{abbotMessage}"
+                    </div>
+                  )}
+                  {!abbotMessage && (
+                    <div className="text-[10px] text-gray-600 italic">— žádná zpráva opata —</div>
+                  )}
+                </div>
+
+                {/* Inkvizitor warning */}
+                {actorInkvizitorTension !== null && actorInkvizitorTension > 60 && (
+                  <div className="bg-red-950/20 border border-red-500/25 rounded-lg p-2.5 text-[11px] text-rose-400 flex items-center gap-2">
+                    <span>⚔️</span>
+                    <span>Inkvizitor aktivní — tension {actorInkvizitorTension}/100</span>
+                  </div>
+                )}
+
+                {/* Actor overrides summary */}
+                {(actorVesnicaneMood !== null || actorVesnicaneStores !== null || actorValachMood !== null || actorValachHerd !== null) && (
+                  <div className="text-[10px] text-gray-500 space-y-0.5">
+                    {actorVesnicaneMood !== null && <div>🏡 Vesničané mood: <span className="text-gray-300 font-mono">{actorVesnicaneMood}%</span></div>}
+                    {actorVesnicaneStores !== null && <div>🏡 Vesničané stores: <span className="text-gray-300 font-mono">{actorVesnicaneStores}%</span></div>}
+                    {actorValachMood !== null && <div>🐏 Valach mood: <span className="text-gray-300 font-mono">{actorValachMood}%</span></div>}
+                    {actorValachHerd !== null && <div>🐏 Valach herd: <span className="text-gray-300 font-mono">{actorValachHerd} ovcí</span></div>}
+                  </div>
+                )}
+
+                {abbotMessageId && (
+                  <div className="text-[10px] text-gray-600 font-mono">
+                    ID: {abbotMessageId} · {abbotMessageOneShot ? "one-shot" : "opakující se"}
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
