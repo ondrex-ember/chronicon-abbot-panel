@@ -49,6 +49,13 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
   const [eventInject, setEventInject] = useState<string>("");
   const [unlockFlag, setUnlockFlag] = useState<string>("");
 
+  // Actor overrides
+  const [actorVesnicaneMood, setActorVesnicaneMood] = useState<number | null>(null);
+  const [actorVesnicaneStores, setActorVesnicaneStores] = useState<number | null>(null);
+  const [actorValachMood, setActorValachMood] = useState<number | null>(null);
+  const [actorValachHerd, setActorValachHerd] = useState<number | null>(null);
+  const [actorInkvizitorTension, setActorInkvizitorTension] = useState<number | null>(null);
+
   // AI Decree Composer state
   const [aiTopic, setAiTopic] = useState("Pochvala za věrnou práci na opisech a trpělivost");
   const [aiComposing, setAiComposing] = useState(false);
@@ -213,7 +220,20 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
       abbot_message_one_shot: abbotMessageOneShot,
       tension_modifier: tensionModifier,
       event_inject: eventInject ? JSON.parse(JSON.stringify(eventInject)) : null,
-      unlock_flag: unlockFlag || null
+      unlock_flag: unlockFlag || null,
+      actor_overrides: (actorVesnicaneMood !== null || actorVesnicaneStores !== null || actorValachMood !== null || actorValachHerd !== null || actorInkvizitorTension !== null) ? {
+        vesnicane: {
+          ...(actorVesnicaneMood !== null ? { mood: actorVesnicaneMood } : {}),
+          ...(actorVesnicaneStores !== null ? { stores: actorVesnicaneStores } : {}),
+        },
+        valach: {
+          ...(actorValachMood !== null ? { mood: actorValachMood } : {}),
+          ...(actorValachHerd !== null ? { herd: actorValachHerd } : {}),
+        },
+        inkvizitor: {
+          ...(actorInkvizitorTension !== null ? { tension: actorInkvizitorTension } : {}),
+        },
+      } : null
     };
   };
 
@@ -543,6 +563,86 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                     onChange={(e) => setEventInject(e.target.value)}
                     className="w-full bg-charcoal border border-monk-amber/10 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-monk-amber/40 placeholder-gray-600 font-mono"
                   />
+                </div>
+
+                {/* Actor Overrides */}
+                <div className="border-t border-monk-amber/10 pt-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-300">Manuální zásah do aktorů (Actor Overrides)</span>
+                    <button
+                      onClick={() => { setActorVesnicaneMood(null); setActorVesnicaneStores(null); setActorValachMood(null); setActorValachHerd(null); setActorInkvizitorTension(null); }}
+                      className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors"
+                    >
+                      Resetovat vše
+                    </button>
+                  </div>
+
+                  {/* Vesničané */}
+                  <div className="bg-charcoal/40 rounded-lg p-3 space-y-2 border border-gray-800/60">
+                    <span className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">🏡 Vesničané</span>
+                    <div>
+                      <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                        <span>Nálada (Mood)</span>
+                        <span className="font-mono">{actorVesnicaneMood !== null ? actorVesnicaneMood : <span className="opacity-40">—</span>}</span>
+                      </div>
+                      <input type="range" min="0" max="100" value={actorVesnicaneMood ?? 50}
+                        onChange={(e) => setActorVesnicaneMood(parseInt(e.target.value))}
+                        className="w-full accent-emerald-500 h-1.5" />
+                      <button onClick={() => setActorVesnicaneMood(null)} className="text-[9px] text-gray-600 hover:text-gray-400 mt-0.5">zrušit override</button>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                        <span>Zásoby (Stores)</span>
+                        <span className="font-mono">{actorVesnicaneStores !== null ? actorVesnicaneStores : <span className="opacity-40">—</span>}</span>
+                      </div>
+                      <input type="range" min="0" max="100" value={actorVesnicaneStores ?? 50}
+                        onChange={(e) => setActorVesnicaneStores(parseInt(e.target.value))}
+                        className="w-full accent-emerald-500 h-1.5" />
+                      <button onClick={() => setActorVesnicaneStores(null)} className="text-[9px] text-gray-600 hover:text-gray-400 mt-0.5">zrušit override</button>
+                    </div>
+                  </div>
+
+                  {/* Valach */}
+                  <div className="bg-charcoal/40 rounded-lg p-3 space-y-2 border border-gray-800/60">
+                    <span className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">🐏 Valach</span>
+                    <div>
+                      <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                        <span>Nálada (Mood)</span>
+                        <span className="font-mono">{actorValachMood !== null ? actorValachMood : <span className="opacity-40">—</span>}</span>
+                      </div>
+                      <input type="range" min="0" max="100" value={actorValachMood ?? 50}
+                        onChange={(e) => setActorValachMood(parseInt(e.target.value))}
+                        className="w-full accent-blue-500 h-1.5" />
+                      <button onClick={() => setActorValachMood(null)} className="text-[9px] text-gray-600 hover:text-gray-400 mt-0.5">zrušit override</button>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                        <span>Stádo (Herd)</span>
+                        <span className="font-mono">{actorValachHerd !== null ? actorValachHerd : <span className="opacity-40">—</span>}</span>
+                      </div>
+                      <input type="range" min="0" max="200" value={actorValachHerd ?? 50}
+                        onChange={(e) => setActorValachHerd(parseInt(e.target.value))}
+                        className="w-full accent-blue-500 h-1.5" />
+                      <button onClick={() => setActorValachHerd(null)} className="text-[9px] text-gray-600 hover:text-gray-400 mt-0.5">zrušit override</button>
+                    </div>
+                  </div>
+
+                  {/* Inkvizitor */}
+                  <div className="bg-charcoal/40 rounded-lg p-3 space-y-2 border border-gray-800/60">
+                    <span className="text-[10px] text-rose-400 font-semibold uppercase tracking-wider">⚔️ Inkvizitor</span>
+                    <div>
+                      <div className="flex justify-between text-[11px] text-gray-400 mb-1">
+                        <span>Napětí (Tension)</span>
+                        <span className={`font-mono ${(actorInkvizitorTension ?? 0) > 60 ? 'text-rose-400' : 'text-gray-300'}`}>
+                          {actorInkvizitorTension !== null ? actorInkvizitorTension : <span className="opacity-40">—</span>}
+                        </span>
+                      </div>
+                      <input type="range" min="0" max="100" value={actorInkvizitorTension ?? 0}
+                        onChange={(e) => setActorInkvizitorTension(parseInt(e.target.value))}
+                        className="w-full accent-rose-500 h-1.5" />
+                      <button onClick={() => setActorInkvizitorTension(null)} className="text-[9px] text-gray-600 hover:text-gray-400 mt-0.5">zrušit override</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
