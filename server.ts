@@ -74,6 +74,43 @@ async function startServer() {
 
   app.use(express.json());
 
+  // ── AUTH — session token store (in-memory, expiry 8h) ──────────────────────
+  const activeSessions = new Map<string, number>(); // token → expiresAt
+  const SESSION_TTL = 8 * 60 * 60 * 1000; // 8h
+
+  const generateToken = () =>
+    Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+
+  const isValidToken = (token: string | undefined): boolean => {
+    if (!token) return false;
+    const exp = activeSessions.get(token);
+    if (!exp) return false;
+    if (Date.now() > exp) { activeSessions.delete(token); return false; }
+    return true;
+  };
+
+  app.post("/api/auth/login", (req, res) => {
+    const { password } = req.body || {};
+    const expected = process.env.ADMIN_PASSWORD;
+    if (!expected) return res.status(500).json({ error: "ADMIN_PASSWORD not configured." });
+    if (password !== expected) return res.status(401).json({ error: "Nesprávné heslo." });
+    const token = generateToken();
+    activeSessions.set(token, Date.now() + SESSION_TTL);
+    return res.json({ success: true, token });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    const token = req.headers["x-admin-token"] as string;
+    if (token) activeSessions.delete(token);
+    return res.json({ success: true });
+  });
+
+  app.get("/api/auth/verify", (req, res) => {
+    const token = req.headers["x-admin-token"] as string;
+    return res.json({ valid: isValidToken(token) });
+  });
+  // ── END AUTH ────────────────────────────────────────────────────────────────
+
   // API Route: Fetch Catalog from GitHub (with fallback)
   app.get("/api/fetch-catalog", async (req, res) => {
     try {
