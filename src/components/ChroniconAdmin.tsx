@@ -235,6 +235,34 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
     showToast("Soubor gm_input.json stažen.", "success");
   };
 
+  // GitHub write-back
+  const [githubToken, setGithubToken] = useState<string>("");
+  const [committing, setCommitting] = useState(false);
+
+  const commitGmInput = async () => {
+    if (!githubToken) { showToast("Zadej GitHub PAT token.", "error"); return; }
+    setCommitting(true);
+    try {
+      const adminToken = sessionStorage.getItem("abbot_token") || "";
+      const res = await fetch("/api/commit-gm-input", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-token": adminToken },
+        body: JSON.stringify({ content: JSON.stringify(buildGmInputJson(), null, 2), githubToken }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("✅ gm_input.json commitnut do GitHub!", "success");
+        setGithubToken(""); // Vymaž token po úspěchu
+      } else {
+        showToast(`Chyba: ${data.error}`, "error");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Nepodařilo se commitnout.", "error");
+    } finally {
+      setCommitting(false);
+    }
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -644,6 +672,30 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                       title="Stáhnout"
                     >
                       <Download className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* GitHub write-back */}
+                <div className="border-t border-monk-amber/10 pt-4 space-y-2">
+                  <p className="text-[11px] text-gray-400">
+                    Commitnout přímo do <code className="text-monk-amber font-mono">ondrex-ember/chronicon</code> — zadej GitHub PAT (classic, scope: <code className="text-monk-amber font-mono">repo</code>):
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      value={githubToken}
+                      onChange={(e) => setGithubToken(e.target.value)}
+                      placeholder="ghp_xxxxxxxxxxxx"
+                      className="flex-1 bg-charcoal border border-monk-amber/10 rounded px-2.5 py-1.5 text-xs font-mono text-gray-300 focus:outline-none focus:border-monk-amber/40 placeholder-gray-600"
+                    />
+                    <button
+                      onClick={commitGmInput}
+                      disabled={committing || !githubToken}
+                      className="px-3 py-1.5 bg-monk-amber hover:bg-monk-amber/80 disabled:bg-charcoal disabled:text-gray-600 text-charcoal font-sans font-semibold text-xs rounded border border-monk-amber/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {committing ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                      {committing ? "Commituju..." : "Commitnout"}
                     </button>
                   </div>
                 </div>
