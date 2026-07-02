@@ -1281,7 +1281,7 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[550px] overflow-y-auto pr-2">
                   {events[dbSourceFilter]
                     .filter((ev) => {
-                      if (dbSearch && !ev.text.toLowerCase().includes(dbSearch.toLowerCase())) return false;
+                      if (dbSearch && !(ev.text_cs || ev.text_en || ev.text || '').toLowerCase().includes(dbSearch.toLowerCase())) return false;
                       return true;
                     })
                     .map((ev, i) => (
@@ -1300,7 +1300,7 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                           </div>
 
                           <p className="text-xs text-gray-300 font-serif leading-relaxed">
-                            "{ev.text}"
+                            "{ev.text_cs || ev.text_en || ev.text || '—'}"
                           </p>
                         </div>
 
@@ -1324,7 +1324,7 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                     ))}
 
                   {events[dbSourceFilter].filter((ev) => {
-                    if (dbSearch && !ev.text.toLowerCase().includes(dbSearch.toLowerCase())) return false;
+                    if (dbSearch && !(ev.text_cs || ev.text_en || ev.text || '').toLowerCase().includes(dbSearch.toLowerCase())) return false;
                     return true;
                   }).length === 0 && (
                     <div className="col-span-2 text-center py-12 text-gray-500 text-xs italic font-serif">
