@@ -1,0 +1,6 @@
+{
+  "name": "Scriptorium Book Studio",
+  "description": "Visual catalog explorer, interactive book editor, and AI-powered book generator with high thinking capabilities for the Scriptorium monastic simulation game.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

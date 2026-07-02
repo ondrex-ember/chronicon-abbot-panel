@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Crimson Text", Georgia, serif;
+  --font-display: "Cinzel", "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-parchment: #f5f0e4;
+  --color-parchment-soft: #ede5ce;
+  --color-ink: #1a1410;
+  --color-ink-soft: #3d2f1f;
+  --color-gold: #c5a059;
+  --color-gold-dark: #9a7a3a;
+  --color-wax: #7c2d12;
+  --color-monk-green: #2d5a27;
+}
+
+/* Base resets & custom scrollbars matching medieval look */
+body {
+  background-color: var(--color-ink);
+  color: var(--color-parchment);
+  font-family: var(--font-serif);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-soft);
+  border: 1px solid var(--color-gold);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-dark);
+}
+
+/* Animations & Transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Medieval styled details */
+.parchment-card {
+  background-color: rgba(245, 240, 228, 0.04);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.gothic-border {
+  border: 1px solid var(--color-gold);
+  position: relative;
+}
+
+.gothic-border::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border: 1px solid rgba(197, 160, 89, 0.15);
+  pointer-events: none;
+}
