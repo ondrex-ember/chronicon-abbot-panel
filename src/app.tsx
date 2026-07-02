@@ -41,9 +41,6 @@ export default function App() {
       .finally(() => setAuthChecked(true));
   }, []);
 
-  if (!authChecked) return null; // Krátký flash před ověřením
-  if (!authToken) return <LoginScreen onLogin={setAuthToken} />;
-
   // App States
   const [books, setBooks] = useState<Book[]>([]);
   const [activeMainTab, setActiveMainTab] = useState<"scriptorium" | "chronicon">("scriptorium");
@@ -104,6 +101,9 @@ export default function App() {
   useEffect(() => {
     fetchCatalog();
   }, []);
+
+  if (!authChecked) return null;
+  if (!authToken) return <LoginScreen onLogin={setAuthToken} />;
 
   const fetchCatalog = async () => {
     setLoading(true);
