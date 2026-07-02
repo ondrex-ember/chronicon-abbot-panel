@@ -20,8 +20,30 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { Book, CATEGORIES, CategoryType } from "./types";
 import ChroniconAdmin from "./components/ChroniconAdmin";
+import LoginScreen from "./components/LoginScreen";
 
 export default function App() {
+  // Auth
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("abbot_token");
+    if (!token) { setAuthChecked(true); return; }
+    // Verify token je stale platny
+    fetch("/api/auth/verify", { headers: { "x-admin-token": token } })
+      .then(r => r.json())
+      .then(data => {
+        if (data.valid) setAuthToken(token);
+        else sessionStorage.removeItem("abbot_token");
+      })
+      .catch(() => {})
+      .finally(() => setAuthChecked(true));
+  }, []);
+
+  if (!authChecked) return null; // Krátký flash před ověřením
+  if (!authToken) return <LoginScreen onLogin={setAuthToken} />;
+
   // App States
   const [books, setBooks] = useState<Book[]>([]);
   const [activeMainTab, setActiveMainTab] = useState<"scriptorium" | "chronicon">("scriptorium");
