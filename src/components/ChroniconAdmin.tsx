@@ -43,6 +43,8 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
   const [abbotVirtue, setAbbotVirtue] = useState<number>(7);
   const [scriniumOpen, setScriniumOpen] = useState(true);
   const [abbotMessage, setAbbotMessage] = useState<string>("");
+  const [abbotMessageId, setAbbotMessageId] = useState<string>("");
+  const [abbotMessageOneShot, setAbbotMessageOneShot] = useState<boolean>(true);
   const [tensionModifier, setTensionModifier] = useState<number>(0);
   const [eventInject, setEventInject] = useState<string>("");
   const [unlockFlag, setUnlockFlag] = useState<string>("");
@@ -207,6 +209,8 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
       abbot_portrait: null,
       scrinium_open: scriniumOpen,
       abbot_message: abbotMessage || null,
+      abbot_message_id: abbotMessageId || null,
+      abbot_message_one_shot: abbotMessageOneShot,
       tension_modifier: tensionModifier,
       event_inject: eventInject ? JSON.parse(JSON.stringify(eventInject)) : null,
       unlock_flag: unlockFlag || null
@@ -465,11 +469,40 @@ export default function ChroniconAdmin({ showToast }: ChroniconAdminProps) {
                   </div>
                   <textarea
                     value={abbotMessage}
-                    onChange={(e) => setAbbotMessage(e.target.value)}
+                    onChange={(e) => {
+                      setAbbotMessage(e.target.value);
+                      // Auto-generuj message_id pokud je prázdné
+                      if (!abbotMessageId && e.target.value.length > 0) {
+                        const d = new Date();
+                        const slug = `msg_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${Math.floor(Math.random()*1000)}`;
+                        setAbbotMessageId(slug);
+                      }
+                    }}
                     rows={4}
                     placeholder="Sem napište opatovo poselství nebo použijte AI k jeho sepsání v pravém panelu..."
                     className="w-full bg-charcoal border border-monk-amber/10 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-monk-amber/40 font-serif leading-relaxed"
                   />
+                  {/* Message ID + One-shot */}
+                  <div className="flex items-center gap-3 mt-2">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={abbotMessageId}
+                        onChange={(e) => setAbbotMessageId(e.target.value)}
+                        placeholder="message_id (auto nebo ručně)"
+                        className="w-full bg-charcoal/60 border border-monk-amber/10 rounded px-2.5 py-1.5 text-xs font-mono text-gray-300 focus:outline-none focus:border-monk-amber/40 placeholder-gray-600"
+                      />
+                    </div>
+                    <label className="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer select-none shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={abbotMessageOneShot}
+                        onChange={(e) => setAbbotMessageOneShot(e.target.checked)}
+                        className="accent-monk-amber w-3.5 h-3.5 cursor-pointer"
+                      />
+                      One-shot (zobrazit 1×)
+                    </label>
+                  </div>
                 </div>
 
                 {/* Event Inject */}
