@@ -102,9 +102,6 @@ export default function App() {
     fetchCatalog();
   }, []);
 
-  if (!authChecked) return null;
-  if (!authToken) return <LoginScreen onLogin={setAuthToken} />;
-
   const fetchCatalog = async () => {
     setLoading(true);
     try {
@@ -471,6 +468,9 @@ export default function App() {
     navigator.clipboard.writeText(text);
     showToast(`Exportovaný kód pro ${type === "cs" ? "library.js" : "en.js"} zkopírován!`, "success");
   };
+
+  if (!authChecked) return null;
+  if (!authToken) return <LoginScreen onLogin={setAuthToken} />;
 
   return (
     <div className="min-h-screen text-parchment font-serif relative overflow-x-hidden selection:bg-gold/30 selection:text-white">
